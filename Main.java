@@ -1,0 +1,113 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.game.base.uncategorized;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
+import static org.lwjgl.opengl.GL11.*;
+
+/**
+ *
+ * @author dani
+ */
+public class Main
+{
+    private static Game game;
+    
+    public static void main(String[] args)
+    {
+        initDisplay();  //Iniciamos el Display
+        initGL();       //Iniciamos Todo lo relacionado con OpenGL
+        gameLoop();     //Mantenemos el display abierto
+        cleanUp();      //Cerramos   
+    }
+       
+    private static void initGame()
+    {
+        game = new Game();
+    }
+    
+    //private static void loadTextures()
+    //{
+    //    game.loadTextures();
+    //}
+    
+    private static void getInput()      
+    {
+        game.getInput();
+    }
+    
+    private static void update()        //logics
+    {
+        game.update();
+    }    
+    
+    private static void render()
+    {
+        
+        glClear(GL_COLOR_BUFFER_BIT);   //Limpiamos el frame antes de pintar
+        glLoadIdentity();
+
+        game.render();
+        
+        Display.update();
+        Display.sync(60);
+    }
+
+    private static void gameLoop()
+    {
+        initGame();
+        //loadTextures();
+        while(!Display.isCloseRequested())
+        {
+            getInput();
+            update();
+            render();
+        }
+    }
+    
+    private static void initGL()
+    {
+        glMatrixMode(GL_PROJECTION);//Inicializamos la matriz de Proyección.
+        glLoadIdentity();           //Matriz identidad.
+        glOrtho(0,Display.getWidth(),0,Display.getHeight(),-1,1);  
+        //Orthographic lo representa de la forma que es realmente,
+        //Perspective representa la visión.
+        //Los 4 primeros parámetros son para establecer las dimensiones en las 
+        //que OpenGL va a dibujar.
+        glMatrixMode(GL_MODELVIEW);
+        
+        glClearColor(0,0,0,1);
+        
+        glDisable(GL_DEPTH_TEST);       //Información sobre 3D
+    }
+
+    private static void cleanUp()
+    {
+        Display.destroy();
+        Keyboard.destroy();
+    }
+    
+    private static void initDisplay()
+    {
+        try
+        {
+            Display.setDisplayMode(new DisplayMode(800,600));
+            Display.create();
+            
+            Display.setVSyncEnabled(true);
+            Keyboard.create();
+        }
+        catch (LWJGLException ex) 
+        {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+}
